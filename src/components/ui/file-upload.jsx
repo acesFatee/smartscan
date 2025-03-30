@@ -36,10 +36,13 @@ export const FileUpload = ({
  
 
   const handleFileChange = (newFiles) => {
-    // Accept only the first file when selecting
-    const singleFile = newFiles.slice(0, 1);
-    setFiles(singleFile);
-    onChange && onChange(singleFile);
+    const file = newFiles[0];
+    if (file.size > 1 * 1024 * 1024) {
+      alert("File size exceeds 1MB. Please upload a smaller file.");
+      return; // Prevent adding the file to state
+    }
+    setFiles([file]); // Add valid file to the state
+    onChange && onChange([file]);
   };
 
   const handleClick = () => {

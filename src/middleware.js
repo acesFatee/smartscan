@@ -13,7 +13,6 @@ export default async function middleware(req) {
     return NextResponse.json({ error: "Invalid Token" }, { status: 401 });
   }
 
-  // No redirects, just forward headers
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set("x-kinde-header", JSON.stringify(header));
   requestHeaders.set("x-kinde-token", token);

@@ -11,6 +11,16 @@ export const createReceiptStepOne = async (formData) => {
       };
     }
 
+    // Check if the image size exceeds 1MB
+    const maxSize = 1 * 1024 * 1024; // 1MB in bytes
+    if (image.size > maxSize) {
+      console.log("Image size exceeds 1MB");87
+      return {
+        error: "Image size exceeds 1MB",
+        statusCode: 400, // Add a status code for reference
+      };
+    }
+
     const arrayBuffer = await image.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
@@ -27,11 +37,11 @@ export const createReceiptStepOne = async (formData) => {
       };
     }
 
-    return {data};
+    return { data };
   } catch (error) {
     console.error("Error in step 1: Getting metadata from receipt: ", error);
     return {
-      error: "Error in step 1: Getting metadata from receipt: "+error,
+      error: "Error in step 1: Getting metadata from receipt: " + error,
     };
   }
 };

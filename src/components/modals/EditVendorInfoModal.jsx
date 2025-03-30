@@ -23,7 +23,11 @@ export default function EditVendorInfoModal({ id, vendorInfo }) {
   const handleSubmitEditVendorInfo = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    await sendUpdateReceipt(id, formData);
+    const data = {};
+    formData.forEach((value, key) => {
+      data[key] = value; 
+    });
+    await sendUpdateReceipt(id, data);
     closeRef.current.click();
     router.refresh()
   };

@@ -22,7 +22,6 @@ export const createReceipt = async (formData) => {
       return { error: errorResult.error };
     }
   } catch (error) {
-    console.error(error);
     return {
       error,
     };

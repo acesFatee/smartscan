@@ -1,4 +1,5 @@
 import { db } from "@/config/firebase";
+import algolia from "@/config/algolia"; // adjust the path accordingly
 
 export const createReceiptStepThree = async (data) => {
   try {
@@ -24,6 +25,16 @@ export const createReceiptStepThree = async (data) => {
       ...receiptDoc,
       createdAt: new Date(),
     };
+
+    await algolia.saveObject(
+      {
+        indexName: "my_index",
+        body: {
+          objectID: docRef.id, // Required by Algolia
+          ...receiptDoc,
+        }
+      }
+    );
 
     return {
       receipt: savedReceipt,

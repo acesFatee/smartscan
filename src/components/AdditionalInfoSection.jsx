@@ -1,15 +1,17 @@
 import React from "react";
 import Modal from "./Modal";
 import { Badge } from "./ui/badge";
+import EditAdditionalInfoModal from "./modals/EditAdditionalInfoModal";
 
 export default function AdditionalInfoSection({id, category, keywords}) {
   return (
     <>
       <div id="additional-info" className="flex space-x-2">
         <h3 className="text-lg font-semibold mb-2">Additional Info</h3>
-        <Modal
+        <EditAdditionalInfoModal
           id={id}
-          foredit={{ additionalInfo: { category, keywords } }}
+          category={category}
+          keywords={keywords}
         />
       </div>
       <p className="text-sm text-muted-foreground">

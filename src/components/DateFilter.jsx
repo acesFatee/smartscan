@@ -2,7 +2,15 @@
 
 import * as React from "react";
 import { CalendarIcon } from "@radix-ui/react-icons";
-import { format, isToday, previousMonday } from "date-fns";
+import {
+  endOfMonth,
+  format,
+  isFirstDayOfMonth,
+  isLastDayOfMonth,
+  isThisMonth,
+  isToday,
+  startOfMonth,
+} from "date-fns";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -15,28 +23,32 @@ import { Context } from "../../Context/Context";
 import { getReceipts } from "@/api-calls/getReceipts";
 
 export function DateFilter({ className }) {
-  const { setDate, date, searchQuery, setReceipts } = React.useContext(Context);
-  const [isFilterApplied, setIsFilterApplied] = React.useState(false);
+  const { setDate, date, searchQuery, setReceipts, setSearchQuery } = React.useContext(Context);
+
+  const from = new Date(date.from);
+  const to = new Date(date.to);
+
+  const showRemoveFilter =
+    (!isFirstDayOfMonth(from) || !isLastDayOfMonth(to)) ||
+    (!isThisMonth(from) || !isThisMonth(to));
 
   const applyFilters = async (newDate) => {
-    console.log('applying filters')
     setDate(newDate);
-    setIsFilterApplied(true);
-    console.log({
-      from: new Date(newDate.from).getTime(),
-      to: new Date(newDate.to).getTime()
-    })
-    const updatedReceipts = await getReceipts(searchQuery, new Date(newDate.from).getTime(), new Date(newDate.to).getTime())
-    setReceipts(updatedReceipts.data)
+    const updatedReceipts = await getReceipts(
+      searchQuery,
+      new Date(newDate.from).getTime(),
+      new Date(newDate.to).getTime()
+    );
+    setReceipts(updatedReceipts.data);
   };
 
   const removeFilters = async () => {
-    const from = previousMonday(new Date()).getTime()
-    const to = Date.now()
+    const from = startOfMonth(new Date()).getTime();
+    const to = endOfMonth(new Date()).getTime();
     setDate({ from, to });
-    setIsFilterApplied(false);
-    const updatedReceipts = await getReceipts(searchQuery, from, to)
-    setReceipts(updatedReceipts.data)
+    setSearchQuery("")
+    const updatedReceipts = await getReceipts("", from, to);
+    setReceipts(updatedReceipts.data);
   };
 
   return (
@@ -85,9 +97,9 @@ export function DateFilter({ className }) {
         </PopoverContent>
       </Popover>
 
-      {isFilterApplied && (
+      {showRemoveFilter && (
         <Button variant="destructive" onClick={removeFilters}>
-          Remove Filters
+          Remove Filter
         </Button>
       )}
     </div>

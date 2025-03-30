@@ -8,103 +8,75 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import {
-  DotsVerticalIcon,
-  EyeOpenIcon,
-  Pencil1Icon,
-  TrashIcon,
-} from "@radix-ui/react-icons";
-
 import { useContext, useEffect, useState } from "react";
 import { Context } from "../../Context/Context";
 import Link from "next/link";
-import { sendDeleteReceipt } from "@/api-calls/sendDeleteReceipt";
+import { getReceipts } from "@/api-calls/getReceipts";
 import { useRouter } from "next/navigation";
 
-export function ReceiptTable({ receiptsData }) {
-  const { receipts, setReceipts } = useContext(Context);
+export function ReceiptTable() {
+  const { receipts, setReceipts, date, searchQuery } = useContext(Context);
   const [loading, setLoading] = useState(true);
-  const router = useRouter()
+  const router = useRouter();
 
-  useEffect(() => {
-    setLoading(true);
+  const fetchReceipts = async () => {
+    const receiptsResponse = await getReceipts(
+      searchQuery,
+      new Date(date?.from).getTime(),
+      new Date(date?.to).getTime()
+    );
+
+    const receiptsData = receiptsResponse.data;
     setReceipts(receiptsData);
     setLoading(false);
-  }, [receiptsData, setReceipts]);
+  };
 
-  const deleteReceipt = async (id, imagePath) => {
-    await sendDeleteReceipt(id, imagePath)
-    router.refresh();
-  }
+  const handleRowClick = (id) => {
+    router.push(`/receipts/${id}`);
+  };
+
+  useEffect(() => {
+    fetchReceipts();
+  }, []);
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Vendor</TableHead>
-          <TableHead>Category</TableHead>
-          <TableHead>Payment</TableHead>
-          <TableHead className="text-right">Amount</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {loading ? (
-          <TableRow>
-            <TableCell colSpan={6} className="text-center">
-              Loading...
-            </TableCell>
-          </TableRow>
-        ) : (
-          receipts?.map((receipt) => (
-            <TableRow key={receipt.objectID}>
-              <TableCell className="font-medium">
-                {receipt.vendorInfo.name}
-              </TableCell>
-              <TableCell>{receipt.category}</TableCell>
-              <TableCell>{receipt.paymentInfo.method}</TableCell>
-              <TableCell className="text-right">
-                ${receipt.grandTotal}
-              </TableCell>
-              <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="p-2">
-                      <DotsVerticalIcon />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem
-                    >
-                      <Link href={`/receipts/${receipt.objectID}`} className="flex w-full">
-                        <EyeOpenIcon className="mr-2 h-5 w-4" />
-                        View</Link>
-                    </DropdownMenuItem>
-
-                    <DropdownMenuSeparator />
-
-                    <DropdownMenuItem
-                      onClick={() => deleteReceipt(receipt.objectID, receipt.imagePath)}
-                      className="text-red-600"
-                    >
-                      <TrashIcon className="mr-2 h-4 w-4" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
+    <div className="py-6">
+      {loading ? (
+        <div className="text-center text-muted-foreground">Loading...</div>
+      ) : (
+        <Table>
+          {/* Table Header */}
+          <TableHeader>
+            <TableRow>
+              <TableHead>Date</TableHead>
+              <TableHead>Vendor Name</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Payment Method</TableHead>
+              <TableHead>Total</TableHead>
             </TableRow>
-          ))
-        )}
-      </TableBody>
-    </Table>
+          </TableHeader>
+
+          {/* Table Body */}
+          <TableBody>
+            {receipts?.map((receipt) => (
+              <TableRow onClick={() => handleRowClick(receipt.objectID)} key={receipt.objectID} className="cursor-pointer hover:bg-muted/50">
+                <TableCell>
+                  {new Date(receipt.dateTime).toISOString().split("T")[0]}
+                </TableCell>
+                <TableCell>{receipt.vendorInfo.name}</TableCell>
+                <TableCell>{receipt.category}</TableCell>
+                <TableCell>{receipt.paymentInfo.method}</TableCell>
+                <TableCell className="font-bold">
+                  {receipt.grandTotal.toLocaleString("en-CA", {
+                    style: "currency",
+                    currency: "CAD",
+                  })}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+    </div>
   );
 }

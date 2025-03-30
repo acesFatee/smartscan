@@ -35,7 +35,12 @@ export default function EditPaymentModal({ id, paymentInfo }) {
     formData.append("paymentInfo.method", method);
     formData.append("paymentInfo.status", status);
 
-    await sendUpdateReceipt(id, formData)
+    const data = {};
+    formData.forEach((value, key) => {
+      data[key] = value; 
+    });
+
+    await sendUpdateReceipt(id, data)
       .then((result) => console.log(result))
       .catch((error) => console.log(error));
 

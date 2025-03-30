@@ -2,17 +2,13 @@
 
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
-export const sendUpdateReceipt = async (id, formData) => {
+export const sendUpdateReceipt = async (id, data) => {
   try {
     const { getAccessTokenRaw } = getKindeServerSession();
+
     const token = await getAccessTokenRaw();
 
-    const data = {};
-    formData.forEach((value, key) => {
-      data[key] = value; 
-    });
-
-    const response = await fetch(`http://localhost:3000/api/receipts/edit/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/receipts/update/${id}`, {
       method: "PUT",
       headers: {
         "x-kinde-token": token,
@@ -20,7 +16,7 @@ export const sendUpdateReceipt = async (id, formData) => {
       },
       body: JSON.stringify(data),
     });
-
+    
     if (response.ok) {
       const result = await response.json();
       return result;

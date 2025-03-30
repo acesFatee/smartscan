@@ -13,6 +13,8 @@ export default function FileInput() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  // Default values shown
+
   useEffect(() => {
     const uploadingState = window.localStorage.getItem("uploading");
     if (uploadingState === "on") {
@@ -55,9 +57,7 @@ export default function FileInput() {
         window.localStorage.setItem("uploading", "off");
         handleClearFiles();
         router.push(`/receipts/${result.receipt.id}`);
-      })
-
-
+      });
     } catch (error) {
       console.error("Error uploading receipt:", error);
       setLoading(false);
@@ -66,12 +66,17 @@ export default function FileInput() {
   };
 
   if (loading) {
-    return <>Uploading your receipt...</>;
+    return <>Uploading...</>;
   }
 
   return (
     <div className="w-full max-w-4xl mx-auto min-h-96 border border-dashed rounded-lg p-6">
-      <FileUpload onChange={handleFileUpload} fileInputRef={fileInputRef} files={files} setFiles={setFiles} />
+      <FileUpload
+        onChange={handleFileUpload}
+        fileInputRef={fileInputRef}
+        files={files}
+        setFiles={setFiles}
+      />
       {files.length > 0 && !loading && (
         <div className="container mx-auto max-w-72 flex justify-between mt-4">
           <Button

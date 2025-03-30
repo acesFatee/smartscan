@@ -23,7 +23,7 @@ import { Textarea } from "./ui/textarea";
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 import { sendUpdateReceipt } from "@/api-calls/sendUpdateReceipt";
 
-export default function Modal({ id, foredit, fordelete }) {
+export default function Modal({ id, foredit, fordelete, forImage }) {
   const sectionToEdit = Object.keys(foredit)[0];
   const dataToEdit = foredit[sectionToEdit];
 

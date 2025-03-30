@@ -6,11 +6,10 @@ import Provider from "../../Context/Provider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Navbar from "@/components/Navbar";
 import { AuthProvider } from "../../Context/AuthProvider";
-import { Open_Sans } from 'next/font/google'
+import { Inter, Open_Sans, Ubuntu } from 'next/font/google'
 
-const font = Open_Sans({
+const font = Inter({
   subsets: ['latin'],
-  weight: "400"
 })
 
 export const metadata = {
