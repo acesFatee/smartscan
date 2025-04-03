@@ -1,4 +1,3 @@
-import localFont from "next/font/local";
 import "./globals.css";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
@@ -6,7 +5,7 @@ import Provider from "../../Context/Provider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Navbar from "@/components/Navbar";
 import { AuthProvider } from "../../Context/AuthProvider";
-import { Inter, Open_Sans, Ubuntu } from 'next/font/google'
+import { Inter } from 'next/font/google'
 
 const font = Inter({
   subsets: ['latin'],
@@ -35,7 +34,7 @@ export default async function RootLayout({ children }) {
           >
             <ThemeProvider
               attribute="class"
-              defaultTheme="system"
+              defaultTheme="light"
               enableSystem
               disableTransitionOnChange
             >
