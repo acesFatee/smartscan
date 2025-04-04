@@ -10,7 +10,7 @@ export const getReceipts = async (searchQuery, from, to) => {
 
     const token = await getAccessTokenRaw();
 
-    const response = await fetch(`http://localhost:3000/api/receipts?searchQuery=${searchQuery}&from=${from}&to=${to}`, {
+    const response = await fetch(`${process.env.KINDE_SITE_URL}/api/receipts?searchQuery=${searchQuery}&from=${from}&to=${to}`, {
       method: "GET",
       headers: {
         "x-kinde-token": token,

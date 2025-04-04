@@ -17,11 +17,11 @@ import { useRouter } from "next/navigation";
 
 export default function ConfirmDeleteModal({ id, imagePath, vendorName }) {
   const router = useRouter();
-  const [open, setOpen] = useState(false); // 🔄 control dialog visibility
+  const [open, setOpen] = useState(false);
 
   const handleDelete = async (id, imagePath) => {
     await sendDeleteReceipt(id, imagePath);
-    setOpen(false); // ✅ close dialog after deletion
+    setOpen(false);
     router.refresh();
   };
 

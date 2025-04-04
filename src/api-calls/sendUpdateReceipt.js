@@ -8,7 +8,7 @@ export const sendUpdateReceipt = async (id, data) => {
 
     const token = await getAccessTokenRaw();
 
-    const response = await fetch(`http://localhost:3000/api/receipts/update/${id}`, {
+    const response = await fetch(`${process.env.KINDE_SITE_URL}/api/receipts/update/${id}`, {
       method: "PUT",
       headers: {
         "x-kinde-token": token,

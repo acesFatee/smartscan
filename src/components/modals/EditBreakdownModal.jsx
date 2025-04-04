@@ -18,9 +18,11 @@ import { useRouter } from "next/navigation";
 export default function EditBreakdownModal({ id, subTotal, tax, grandTotal }) {
   const router = useRouter();
   const closeRef = useRef();
-  
+  const [loading, setLoading] = React.useState(false);
+
   const handleSubmitEditBreakdown = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const formData = new FormData(e.target);
 
     const data = {};
@@ -33,7 +35,7 @@ export default function EditBreakdownModal({ id, subTotal, tax, grandTotal }) {
       tax: data.tax,
       grandTotal: data.grandTotal,
     });
-
+    setLoading(false);
     router.refresh();
     closeRef.current.click();
   };
@@ -81,9 +83,16 @@ export default function EditBreakdownModal({ id, subTotal, tax, grandTotal }) {
                 defaultValue={grandTotal}
               />
             </div>
-            <Button type="submit" className="w-full">
-              Save Changes
-            </Button>
+            {!loading && (
+              <Button type="submit" className="w-full">
+                Save Changes
+              </Button>
+            )}
+            {loading && (
+              <Button className="w-full">
+                Saving Changes...
+              </Button>
+            )}
           </form>
         </DialogHeader>
 

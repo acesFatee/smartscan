@@ -6,7 +6,7 @@ export const createReceipt = async (formData) => {
   try {
     const { getAccessTokenRaw } = getKindeServerSession();
     const token = await getAccessTokenRaw();
-    const response = await fetch("http://localhost:3000/api/receipts/new", {
+    const response = await fetch(`${process.env.KINDE_SITE_URL}/api/receipts/new`, {
       method: "POST",
       headers: {
         "x-kinde-token": token,

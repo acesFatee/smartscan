@@ -7,7 +7,7 @@ export const getReceipt = async (id) => {
     const { getAccessTokenRaw } = getKindeServerSession();
     const token = await getAccessTokenRaw();
 
-    const response = await fetch(`http://localhost:3000/api/receipts/${id}`, {
+    const response = await fetch(`${process.env.KINDE_SITE_URL}/api/receipts/${id}`, {
       method: "GET",
       headers: {
         "x-kinde-token": token,

@@ -6,7 +6,7 @@ export const sendDeleteReceipt = async (id, imagePath) => {
   try {
     const { getAccessTokenRaw } = getKindeServerSession();
     const token = await getAccessTokenRaw();
-    const response = await fetch(`http://localhost:3000/api/receipts/delete/${id}`, {
+    const response = await fetch(`${process.env.KINDE_SITE_URL}/api/receipts/delete/${id}`, {
       method: "DELETE",
       headers: {
         "x-kinde-token": token,

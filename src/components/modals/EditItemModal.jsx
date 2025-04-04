@@ -18,18 +18,21 @@ import { useRouter } from "next/navigation";
 export default function EditItemModal({ id, index, item, items }) {
   const closeRef = useRef();
   const router = useRouter();
+  const [loading, setLoading] = React.useState(false);
 
   const handleSubmitEditItem = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const formData = new FormData(e.target);
 
     const data = {};
     formData.forEach((value, key) => {
-      data[key] = !isNaN(value) ? Number(value): value;
+      data[key] = !isNaN(value) ? Number(value) : value;
     });
 
     items[index] = data;
     await sendUpdateReceipt(id, { items });
+    setLoading(false);
     router.refresh();
     closeRef.current.click();
   };
@@ -88,9 +91,16 @@ export default function EditItemModal({ id, index, item, items }) {
             </div>
           </div>
 
-          <Button type="submit" className="w-full">
-            Save Changes
-          </Button>
+          {!loading && (
+            <Button type="submit" className="w-full">
+              Save Changes
+            </Button>
+          )}
+          {loading && (
+            <Button className="w-full">
+              Saving Changes...
+            </Button>
+          )}
         </form>
         <DialogDescription />
       </DialogContent>

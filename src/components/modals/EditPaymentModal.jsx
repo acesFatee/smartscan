@@ -25,25 +25,27 @@ import { sendUpdateReceipt } from "@/api-calls/sendUpdateReceipt";
 export default function EditPaymentModal({ id, paymentInfo }) {
   const [method, setMethod] = useState(paymentInfo.method || "");
   const [status, setStatus] = useState(paymentInfo.status || "");
+  const [loading, setLoading] = useState(false);
   const closeRef = useRef();
   const router = useRouter();
 
   const handleSubmitEditPayment = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const formData = new FormData(e.target);
-
     formData.append("paymentInfo.method", method);
     formData.append("paymentInfo.status", status);
 
     const data = {};
     formData.forEach((value, key) => {
-      data[key] = value; 
+      data[key] = value;
     });
 
     await sendUpdateReceipt(id, data)
       .then((result) => console.log(result))
       .catch((error) => console.log(error));
 
+    setLoading(false);
     closeRef.current.click();
     router.refresh();
   };
@@ -117,9 +119,16 @@ export default function EditPaymentModal({ id, paymentInfo }) {
               />
             </div>
 
-            <Button type="submit" className="w-full">
-              Save Changes
-            </Button>
+            {!loading && (
+              <Button type="submit" className="w-full">
+                Save Changes
+              </Button>
+            )}
+            {loading && (
+              <Button className="w-full">
+                Saving Changes...
+              </Button>
+            )}
           </form>
         </DialogHeader>
 

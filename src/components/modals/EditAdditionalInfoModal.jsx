@@ -10,18 +10,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Pencil2Icon } from "@radix-ui/react-icons";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
 import { sendUpdateReceipt } from "@/api-calls/sendUpdateReceipt";
 import { useRouter } from "next/navigation";
 
 export default function EditAdditionalInfoModal({id, category, keywords}) {
 
+  const [loading, setLoading] = useState(false)
+
   const closeRef = useRef();
   const router = useRouter()
 
   const handleSubmitEditAdditionalInfo = async (e) => {
     e.preventDefault();
+    setLoading(true)
     const formData = new FormData(e.target);
 
     const data = {};
@@ -30,6 +33,7 @@ export default function EditAdditionalInfoModal({id, category, keywords}) {
     });
 
     await sendUpdateReceipt(id, data)
+    setLoading(false)
     closeRef.current.click();
     router.refresh();
   };
@@ -65,9 +69,12 @@ export default function EditAdditionalInfoModal({id, category, keywords}) {
               />
             </div>
 
-            <Button type="submit" className="w-full">
+           {!loading && <Button type="submit" className="w-full">
               Save Changes
-            </Button>
+            </Button>}
+           {loading && <Button className="w-full">
+              Saving Changes...
+            </Button>}
           </form>
         </DialogHeader>
 

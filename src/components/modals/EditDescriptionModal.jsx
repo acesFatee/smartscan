@@ -19,15 +19,18 @@ import { useRouter } from "next/navigation";
 export default function EditDescriptionModal({ id, description }) {
   const router = useRouter();
   const closeRef = useRef();
-  
+  const [loading, setLoading] = React.useState(false);
+
   const handleSubmitEditDescription = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const formData = new FormData(e.target);
     const data = {};
     formData.forEach((value, key) => {
-      data[key] = value; 
+      data[key] = value;
     });
     await sendUpdateReceipt(id, data);
+    setLoading(false);
     closeRef.current.click();
     router.refresh();
   };
@@ -52,9 +55,16 @@ export default function EditDescriptionModal({ id, description }) {
                 defaultValue={description}
               />
             </div>
-            <Button type="submit" className="w-full">
-              Save Changes
-            </Button>
+            {!loading && (
+              <Button type="submit" className="w-full">
+                Save Changes
+              </Button>
+            )}
+            {loading && (
+              <Button className="w-full">
+                Saving Changes...
+              </Button>
+            )}
           </form>
         </DialogHeader>
 

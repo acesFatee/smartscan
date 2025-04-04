@@ -16,20 +16,22 @@ import { sendUpdateReceipt } from "@/api-calls/sendUpdateReceipt";
 import { useRouter } from "next/navigation";
 
 export default function EditVendorInfoModal({ id, vendorInfo }) {
-
   const closeRef = useRef();
-  const router = useRouter()
+  const router = useRouter();
+  const [loading, setLoading] = React.useState(false);
 
   const handleSubmitEditVendorInfo = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const formData = new FormData(e.target);
     const data = {};
     formData.forEach((value, key) => {
-      data[key] = value; 
+      data[key] = value;
     });
     await sendUpdateReceipt(id, data);
+    setLoading(false);
     closeRef.current.click();
-    router.refresh()
+    router.refresh();
   };
 
   return (
@@ -85,9 +87,16 @@ export default function EditVendorInfoModal({ id, vendorInfo }) {
               />
             </div>
 
-            <Button type="submit" className="w-full">
-              Save Changes
-            </Button>
+            {!loading && (
+              <Button type="submit" className="w-full">
+                Save Changes
+              </Button>
+            )}
+            {loading && (
+              <Button className="w-full">
+                Saving Changes...
+              </Button>
+            )}
           </form>
         </DialogHeader>
 
