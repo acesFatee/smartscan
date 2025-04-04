@@ -4,6 +4,10 @@ import { createReceiptStepTwo } from "@/helpers/createReceiptStepTwo";
 import { decodeToken } from "@/helpers/decodeToken";
 import { NextResponse } from "next/server";
 
+export const config = {
+  runtime: "nodejs",
+};
+
 export const POST = async (req) => {
   try {
     const formData = await req.formData();
