@@ -5,12 +5,34 @@ import { decodeToken } from "@/helpers/decodeToken";
 import { NextResponse } from "next/server";
 
 export const config = {
-  runtime: "nodejs",
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb',
+    },
+  },
 };
 
-export const POST = async (req) => {
+export async function POST(req) {
   try {
-    const formData = await req.formData();
+    const contentType = req.headers.get('content-type');
+    if (!contentType || !contentType.includes('multipart/form-data')) {
+      return NextResponse.json(
+        { error: 'Content type must be multipart/form-data' },
+        { status: 400 }
+      );
+    }
+
+    let formData;
+    try {
+      formData = await req.formData();
+    } catch (error) {
+      console.error('FormData parsing error:', error);
+      return NextResponse.json(
+        { error: 'Failed to parse form data' },
+        { status: 400 }
+      );
+    }
+
     const { sub: user, error } = await decodeToken(req);
 
     if (error) {
@@ -70,4 +92,4 @@ export const POST = async (req) => {
       { status: 500 }
     );
   }
-};
+}
