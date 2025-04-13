@@ -4,31 +4,15 @@ import { createReceiptStepTwo } from "@/helpers/createReceiptStepTwo";
 import { decodeToken } from "@/helpers/decodeToken";
 import { NextResponse } from "next/server";
 
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '10mb',
-    },
-  },
-};
 
 export async function POST(req) {
   try {
-    const contentType = req.headers.get('content-type');
-    if (!contentType || !contentType.includes('multipart/form-data')) {
-      return NextResponse.json(
-        { error: 'Content type must be multipart/form-data' },
-        { status: 400 }
-      );
-    }
+    const jsonData = await req.json();
+    const { image } = jsonData;
 
-    let formData;
-    try {
-      formData = await req.formData();
-    } catch (error) {
-      console.error('FormData parsing error:', error);
+    if (!image || !image.base64) {
       return NextResponse.json(
-        { error: 'Failed to parse form data' },
+        { error: "No image provided" },
         { status: 400 }
       );
     }
@@ -39,7 +23,31 @@ export async function POST(req) {
       return NextResponse.json({ error: "Not a valid token" }, { status: 401 });
     }
 
-    const step1 = await createReceiptStepOne(formData);
+    // Create a FormData-like object for compatibility with existing functions
+    const imageData = {
+      get: (key) => {
+        if (key === 'image') {
+          return {
+            name: image.name,
+            type: image.type,
+            size: image.size,
+            arrayBuffer: async () => {
+              // Convert base64 back to array buffer if needed
+              const base64Data = image.base64.split(',')[1];
+              const binaryString = atob(base64Data);
+              const bytes = new Uint8Array(binaryString.length);
+              for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+              }
+              return bytes.buffer;
+            }
+          };
+        }
+        return null;
+      }
+    };
+
+    const step1 = await createReceiptStepOne(imageData);
     if (step1.error) {
       return NextResponse.json(
         {
@@ -50,7 +58,7 @@ export async function POST(req) {
       );
     }
 
-    const step2 = await createReceiptStepTwo(formData, user);
+    const step2 = await createReceiptStepTwo(imageData, user);
     if (step2.error) {
       return NextResponse.json(
         {
@@ -88,7 +96,7 @@ export async function POST(req) {
   } catch (error) {
     console.error("Internal Server Error: ", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Internal Server Error: " + error.message },
       { status: 500 }
     );
   }

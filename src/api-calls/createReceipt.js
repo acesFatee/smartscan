@@ -6,12 +6,32 @@ export const createReceipt = async (formData) => {
   try {
     const { getAccessTokenRaw } = getKindeServerSession();
     const token = await getAccessTokenRaw();
+
+    // Get the file from FormData
+    const file = formData.get('image');
+    
+    // Convert file to base64
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const base64String = buffer.toString('base64');
+
+    // Create JSON object with file data
+    const jsonData = {
+      image: {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        base64: `data:${file.type};base64,${base64String}`
+      }
+    };
+
     const response = await fetch(`${process.env.KINDE_SITE_URL}/api/receipts/new`, {
       method: "POST",
       headers: {
         "x-kinde-token": token,
+        "Content-Type": "application/json",
       },
-      body: formData,
+      body: JSON.stringify(jsonData),
     });
 
     if (response.ok) {
@@ -22,8 +42,9 @@ export const createReceipt = async (formData) => {
       return { error: errorResult.error };
     }
   } catch (error) {
+    console.error('Error in createReceipt:', error);
     return {
-      error,
+      error: error.message || 'Failed to process receipt',
     };
   }
 };
