@@ -1,6 +1,5 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -19,15 +18,15 @@ import BreakdownSection from "@/components/BreakdownSection";
 import AdditionalInfoSection from "@/components/AdditionalInfoSection";
 import EditDateModal from "@/components/EditDate";
 import ConfirmDeleteModal from "@/components/modals/ConfirmDeleteModal";
+import { redirect } from "next/navigation";
+import BackButton from "@/components/BackButton";
 
 export default async function page(props) {
   const { id } = await props.params;
   const receipt = await getReceipt(id);
 
   if (receipt.error) {
-    return (
-      <div className="text-center text-red-600 pt-20">Receipt not found.</div>
-    );
+    return redirect('/receipts')
   }
 
   const {
@@ -48,6 +47,7 @@ export default async function page(props) {
   return (
     <div className="py-32 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
+        <BackButton />
         <Card className="overflow-hidden shadow-xl">
           {/* Card Header */}
           <CardHeader className="p-6">

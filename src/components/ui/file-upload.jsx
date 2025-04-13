@@ -1,10 +1,11 @@
 'use client'
 
 import { cn } from "@/lib/utils";
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { IconUpload } from "@tabler/icons-react";
 import { useDropzone } from "react-dropzone";
+import { useToast } from "@/hooks/use-toast";
 
 const mainVariant = {
   initial: {
@@ -34,14 +35,17 @@ export const FileUpload = ({
   setFiles
 }) => {
  
-
+  const { toast } = useToast()
   const handleFileChange = (newFiles) => {
     const file = newFiles[0];
     if (file.size > 1 * 1024 * 1024) {
-      alert("File size exceeds 1MB. Please upload a smaller file.");
-      return; // Prevent adding the file to state
+      toast({
+        variant: "destructive",
+        title: "File size exceeds 1MB. Please upload a smaller file.",
+      })
+      return;
     }
-    setFiles([file]); // Add valid file to the state
+    setFiles([file]);
     onChange && onChange([file]);
   };
 

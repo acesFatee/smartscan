@@ -5,11 +5,13 @@ import Provider from "../../Context/Provider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Navbar from "@/components/Navbar";
 import { AuthProvider } from "../../Context/AuthProvider";
-import { Inter } from 'next/font/google'
+import { Inter } from "next/font/google";
+import { Toaster } from "@/components/ui/toaster";
+import { ToastProvider } from "@radix-ui/react-toast";
 
 const font = Inter({
-  subsets: ['latin'],
-})
+  subsets: ["latin"],
+});
 
 export const metadata = {
   title: "Smartscan - AI receipt manager",
@@ -30,16 +32,18 @@ export default async function RootLayout({ children }) {
     <AuthProvider>
       <Provider>
         <html lang="en" suppressHydrationWarning>
-          <body className={font.className}
-          >
+          <body className={font.className}>
             <ThemeProvider
               attribute="class"
               defaultTheme="light"
               enableSystem
               disableTransitionOnChange
             >
-              <Navbar user={user} />
-              {children}
+              <ToastProvider>
+                <Navbar user={user} />
+                {children}
+                <Toaster />
+              </ToastProvider>
             </ThemeProvider>
           </body>
         </html>

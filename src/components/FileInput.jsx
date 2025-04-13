@@ -1,32 +1,24 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { FileUpload } from "@/components/ui/file-upload";
 import { Button } from "./ui/button";
 import { Trash2, UploadCloud } from "lucide-react";
 import { createReceipt } from "@/api-calls/createReceipt";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast"
 
 export default function FileInput() {
   const [files, setFiles] = useState([]);
   const fileInputRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { toast } = useToast()
 
   // Default values shown
 
-  useEffect(() => {
-    const uploadingState = window.localStorage.getItem("uploading");
-    if (uploadingState === "on") {
-      setLoading(true);
-    } else {
-      setLoading(false);
-    }
-  }, []);
-
   const handleFileUpload = (file) => {
     setFiles(file);
-    console.log(file);
   };
 
   const handleClearFiles = () => {
@@ -38,12 +30,13 @@ export default function FileInput() {
 
   const handleSubmit = async () => {
     setLoading(true);
-    window.localStorage.setItem("uploading", "on");
 
     if (files.length === 0) {
-      alert("Select a receipt");
+      toast({
+        variant: "destructive",
+        title: "No file selected",
+      })
       setLoading(false);
-      window.localStorage.setItem("uploading", "off");
       return;
     }
 
@@ -54,14 +47,26 @@ export default function FileInput() {
       formData.append("image", image);
 
       await createReceipt(formData).then((result) => {
-        window.localStorage.setItem("uploading", "off");
         handleClearFiles();
-        router.push(`/receipts/${result.receipt.id}`);
+        if(result.error) {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: result.error,
+          })
+          setLoading(false);
+        } else {
+          router.push(`/receipts/${result.receipt.id}`);
+        }
       });
     } catch (error) {
       console.error("Error uploading receipt:", error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error?.message,
+      })
       setLoading(false);
-      window.localStorage.setItem("uploading", "off");
     }
   };
 

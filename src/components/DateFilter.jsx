@@ -2,15 +2,7 @@
 
 import * as React from "react";
 import { CalendarIcon } from "@radix-ui/react-icons";
-import {
-  endOfMonth,
-  format,
-  isFirstDayOfMonth,
-  isLastDayOfMonth,
-  isThisMonth,
-  isToday,
-  startOfMonth,
-} from "date-fns";
+import { format, isSameDay } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -21,34 +13,77 @@ import {
 } from "@/components/ui/popover";
 import { Context } from "../../Context/Context";
 import { getReceipts } from "@/api-calls/getReceipts";
+import { useRouter } from "next/navigation";
 
 export function DateFilter({ className }) {
-  const { setDate, date, searchQuery, setReceipts, setSearchQuery } = React.useContext(Context);
+  const { searchQuery, setReceipts, currentPage, createUrl, from, to, setTotalPages } =
+    React.useContext(Context);
 
-  const from = new Date(date.from);
-  const to = new Date(date.to);
+  const router = useRouter();
 
-  const showRemoveFilter =
-    (!isFirstDayOfMonth(from) || !isLastDayOfMonth(to)) ||
-    (!isThisMonth(from) || !isThisMonth(to));
+  const [date, setDate] = React.useState({
+    from: from ? new Date(Number(from)) : undefined,
+    to: to ? new Date(Number(to)) : undefined
+  });
+
+  const showRemoveFilter = from || to;
 
   const applyFilters = async (newDate) => {
     setDate(newDate);
-    const updatedReceipts = await getReceipts(
-      searchQuery,
-      new Date(newDate.from).getTime(),
-      new Date(newDate.to).getTime()
+
+    const getDateTimestamp = (date) => {
+      if (!date || isNaN(new Date(date).getTime())) return null;
+      return new Date(date).getTime();
+    };
+
+    let fromTimestamp = getDateTimestamp(newDate?.from);
+    let toTimestamp = getDateTimestamp(newDate?.to);
+
+    if (fromTimestamp && toTimestamp && isSameDay(new Date(fromTimestamp), new Date(toTimestamp))) {
+      toTimestamp = fromTimestamp;
+    } else if (fromTimestamp && !toTimestamp) {
+      toTimestamp = fromTimestamp;
+    } else if (!fromTimestamp && toTimestamp) {
+      fromTimestamp = toTimestamp;
+    }
+
+    router.push(
+      createUrl({
+        from: fromTimestamp,
+        to: toTimestamp,
+        page: 1,
+      })
     );
+
+    const updatedReceipts = await getReceipts({
+      searchQuery,
+      from: fromTimestamp,
+      to: toTimestamp,
+      currentPage,
+    });
     setReceipts(updatedReceipts.data);
+    setTotalPages(updatedReceipts.pagination.totalPages);
   };
 
   const removeFilters = async () => {
-    const from = startOfMonth(new Date()).getTime();
-    const to = endOfMonth(new Date()).getTime();
-    setDate({ from, to });
-    setSearchQuery("")
-    const updatedReceipts = await getReceipts("", from, to);
+    setDate({ from: undefined, to: undefined });
+    
+    router.push(createUrl({ from: null, to: null, page: 1 }));
+    const updatedReceipts = await getReceipts({
+      searchQuery,
+      from: undefined,
+      to: undefined,
+      currentPage,
+    });
     setReceipts(updatedReceipts.data);
+    setTotalPages(updatedReceipts.pagination.totalPages);
+  };
+
+  const getDateRangeText = ({from, to}) => {
+    if (!from && !to) return "All time";
+    if(from && !to) return `${format(from, "LLL dd, y")}`;
+    if (!from && to) return `${format(to, "LLL dd, y")}`;
+    return `${format(from, "LLL dd, y")} - ${format(to, "LLL dd, y")}`;
   };
 
   return (
@@ -63,35 +98,19 @@ export function DateFilter({ className }) {
             )}
           >
             <CalendarIcon className="mr-2" />
-            {date?.from ? (
-              date.to ? (
-                isToday(date.from) && isToday(date.to) ? (
-                  <span>All time</span>
-                ) : (
-                  <>
-                    {format(date.from, "LLL dd, y")} -{" "}
-                    {format(date.to, "LLL dd, y")}
-                  </>
-                )
-              ) : (
-                format(date.from, "LLL dd, y")
-              )
-            ) : (
-              <span>Choose a time span</span>
-            )}
+            {getDateRangeText({
+              from: date?.from,
+              to: date?.to
+            })}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             initialFocus
             mode="range"
-            defaultMonth={date?.from}
+            defaultMonth={date?.from || new Date()}
             selected={date}
-            onSelect={async (newDate) => {
-              if (newDate?.from && newDate?.to) {
-                await applyFilters(newDate);
-              }
-            }}
+            onSelect={applyFilters}
             numberOfMonths={2}
           />
         </PopoverContent>

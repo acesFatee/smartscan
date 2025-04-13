@@ -2,15 +2,13 @@
 
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
-export const getReceipts = async (searchQuery, from, to) => {
+export const getReceipts = async ({searchQuery, from, to, currentPage}) => {
   try {
     const { getAccessTokenRaw } = getKindeServerSession();
-  
-    console.log(new Date(from), new Date(to))
 
     const token = await getAccessTokenRaw();
 
-    const response = await fetch(`${process.env.KINDE_SITE_URL}/api/receipts?searchQuery=${searchQuery}&from=${from}&to=${to}`, {
+    const response = await fetch(`${process.env.KINDE_SITE_URL}/api/receipts?searchQuery=${searchQuery}&from=${from}&to=${to}&page=${currentPage}`, {
       method: "GET",
       headers: {
         "x-kinde-token": token,

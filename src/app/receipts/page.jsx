@@ -1,6 +1,7 @@
 import { DateFilter } from "@/components/DateFilter";
 import { Search } from "@/components/Search";
 import { ReceiptTable } from "@/components/ReceiptTable";
+import Pagination from "@/components/Pagination";
 
 export default function page() {
 
@@ -16,7 +17,9 @@ export default function page() {
           <ReceiptTable />
         </section>
 
-        <section className="pagination"></section>
+        <section className="pagination mx-auto max-w-5xl flex justify-center">
+          <Pagination />
+        </section>
       </div>
     </>
   );

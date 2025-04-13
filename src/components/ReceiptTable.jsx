@@ -10,25 +10,30 @@ import {
 } from "@/components/ui/table";
 import { useContext, useEffect, useState } from "react";
 import { Context } from "../../Context/Context";
-import Link from "next/link";
 import { getReceipts } from "@/api-calls/getReceipts";
 import { useRouter } from "next/navigation";
+import { isToday, isYesterday } from "date-fns";
 
 export function ReceiptTable() {
-  const { receipts, setReceipts, date, searchQuery } = useContext(Context);
+  const { receipts, setReceipts, from, to, searchQuery, currentPage, setTotalPages, setTotalReceipts } = useContext(Context);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   const fetchReceipts = async () => {
     const receiptsResponse = await getReceipts(
-      searchQuery,
-      new Date(date?.from).getTime(),
-      new Date(date?.to).getTime()
+      {
+        searchQuery,
+        from: new Date(from).getTime(),
+        to: new Date(to).getTime(),
+        currentPage
+      }
     );
-
+    
     const receiptsData = receiptsResponse.data;
     setReceipts(receiptsData);
     setLoading(false);
+    setTotalPages(receiptsResponse.pagination.totalPages);
+    setTotalReceipts(receiptsResponse.pagination.totalReceipts);
   };
 
   const handleRowClick = (id) => {
@@ -56,12 +61,13 @@ export function ReceiptTable() {
             </TableRow>
           </TableHeader>
 
+
           {/* Table Body */}
           <TableBody>
             {receipts?.map((receipt) => (
               <TableRow onClick={() => handleRowClick(receipt.objectID)} key={receipt.objectID} className="cursor-pointer hover:bg-muted/50">
                 <TableCell>
-                  {new Date(receipt.dateTime).toISOString().split("T")[0]}
+                  {isToday(receipt.dateTime) ? "Today" : isYesterday(receipt.dateTime) ? "Yesterday" : new Date(receipt.dateTime).toISOString().split("T")[0]}
                 </TableCell>
                 <TableCell>{receipt.vendorInfo.name}</TableCell>
                 <TableCell>{receipt.category}</TableCell>

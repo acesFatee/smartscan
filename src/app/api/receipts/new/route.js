@@ -6,6 +6,12 @@ import { NextResponse } from "next/server";
 
 
 export async function POST(req) {
+  const { sub: user, error } = await decodeToken(req);
+
+    if (error) {
+      return NextResponse.json({ error: "Not a valid token" }, { status: 401 });
+    }
+    
   try {
     const jsonData = await req.json();
     const { image } = jsonData;
@@ -15,12 +21,6 @@ export async function POST(req) {
         { error: "No image provided" },
         { status: 400 }
       );
-    }
-
-    const { sub: user, error } = await decodeToken(req);
-
-    if (error) {
-      return NextResponse.json({ error: "Not a valid token" }, { status: 401 });
     }
 
     // Create a FormData-like object for compatibility with existing functions
