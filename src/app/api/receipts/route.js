@@ -12,7 +12,7 @@ export const GET = async (req) => {
     }
 
     const { searchParams } = new URL(req.url);
-    const pageSize = 15;
+    const pageSize = parseInt(searchParams.get("pageSize")) || 15;
     const page = parseInt(searchParams.get("page")) || 0
     const algoliaPage = page - 1;
     const searchQuery = searchParams.get("searchQuery") || "";
