@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🧾 Smartscan
 
-## Getting Started
+Smartscan is an AI-powered receipt management web application that allows users to upload receipt images, automatically extract metadata using OpenAI, and store, filter, edit, and export receipt information securely.
 
-First, run the development server:
+Built with modern tools like **Next.js**, **Kinde Auth**, **Firebase**, and **Algolia**, Smartscan makes it effortless to keep track of personal and business expenses.
+
+---
+
+## 🚀 Features
+
+- 📸 **Drag & Drop Uploads**  
+  Upload your receipts directly on the homepage.
+
+- 🤖 **AI-Powered Extraction**  
+  Extracts vendor name, date, total, category, and item details using the **OpenAI API**.
+
+- 🔐 **Secure Authentication**  
+  Login and user session management powered by **Kinde Auth**.
+
+- 🗂️ **Receipt Dashboard**  
+  View all your receipts with pagination and quick access to receipt metadata and images.
+
+- 🔍 **Smart Search & Filters**  
+  Use Algolia-powered full-text search and filter receipts by date range.
+
+- ✏️ **Edit & Delete Receipts**  
+  Easily update or delete saved receipts.
+
+- 📤 **Export Functionality**  
+  Export filtered or all receipts as **CSV** or **Excel** for bookkeeping or tax filing.
+
+---
+
+## 🧱 Tech Stack
+
+| Layer         | Technology                          |
+|---------------|-------------------------------------|
+| Framework     | [Next.js](https://nextjs.org/)      |
+| Auth          | [Kinde Auth](https://kinde.com/)    |
+| Backend       | [Firebase Firestore](https://firebase.google.com/products/firestore) |
+| File Storage  | [Firebase Storage](https://firebase.google.com/products/storage)     |
+| AI Extraction | [OpenAI API](https://platform.openai.com/) |
+| Search        | [Algolia](https://www.algolia.com/) |
+| Styling       | [Tailwind CSS](https://tailwindcss.com/), [Shadcn UI](https://ui.shadcn.com/) |
+| Hosting       | [Vercel](https://vercel.com/)       |
+
+---
+
+## 📸 Screenshots
+
+### 🧾 Upload Receipt Page
+![Upload Page](https://github.com/user-attachments/assets/c1261ca6-bdcb-44dc-9522-5b2535015a01)
+
+### 📊 Dashboard with Filters and Export
+![Dashboard](https://github.com/user-attachments/assets/885521fe-08dc-4073-b0c8-aae122f92c64)
+
+### 🧍 Detailed Receipt View with Metadata
+![Receipt Details](https://github.com/user-attachments/assets/51e7879f-30db-4cce-b0c0-bcf75b74ce16)
+
+---
+
+## 🧑‍💼 Why Smartscan?
+
+This project was built to solve a real-world problem—helping my dad manage his business receipts easily and digitally. With Smartscan, he can:
+- Snap a photo of a receipt
+- Let AI extract important information
+- Store, search, and export reports without manual work.
+
+---
+
+## 🛠️ Running Locally
 
 ```bash
+# Clone the repository
+git clone https://github.com/acesFatee/smartscan.git
+cd smartscan
+
+# Install dependencies
+npm install
+
+# Create a `.env.local` file with your API keys and config
+cp .env.example .env.local
+
+# Start the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
